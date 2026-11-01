@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مغامرة ترتيب الأعداد | أ / سلطانه الخديدي</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Tahoma,Arial,sans-serif;background:linear-gradient(140deg,#eaf7ff,#fff1f8);color:#253354;text-align:center;min-height:100vh}main{max-width:680px;margin:30px auto;padding:22px;background:#ffffffed;border-radius:26px;box-shadow:0 12px 30px #536e9c25}h1{color:#7950c8;margin:8px 0}h2{font-size:22px}.sub{color:#65718d}input,button{font:inherit;border-radius:14px;padding:12px;margin:6px}input{border:2px solid #d3c9f4;max-width:95%;width:280px}button{border:0;background:#7255d8;color:#fff;cursor:pointer;touch-action:manipulation}button:disabled{opacity:.5;cursor:default}.secondary{background:#f5a623;color:#292929}.ghost{background:#dfe8ff;color:#29365b}.tiles{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:20px auto}.tile{background:#ffe281;color:#253354;font-size:28px;font-weight:bold;min-width:64px;min-height:66px;box-shadow:0 3px 0 #d5a83b}.tile.selected{background:#95e4b9}.tile:disabled{background:#b6edc9;opacity:1}.chosen{min-height:76px;border:2px dashed #ad9bef;border-radius:18px;padding:10px;margin:15px 0;font-size:30px;letter-spacing:6px}.hidden{display:none}.feedback{font-weight:bold;min-height:30px;color:#247e62}.small{font-size:13px;color:#667085}table{border-collapse:collapse;width:100%;margin-top:12px}td,th{border-bottom:1px solid #eee;padding:9px;font-size:14px}footer{padding:16px;color:#7b7b91}
+</style>
+</head>
+<body><main>
+<h1>🌈 مغامرة ترتيب الأعداد 🌈</h1>
+<p class="sub">الصف الأول الابتدائي • الأعداد من ١ إلى ١٠</p>
+<section id="welcome">
+<h2>أهلًا يا بطل/ة! ⭐</h2>
+<label for="student">اسم الطالب/ة</label><br><input id="student" placeholder="اكتب/ي الاسم هنا" maxlength="60" autocomplete="name"><br>
+<button onclick="start()">🚀 ابدأ المغامرة</button><br><button class="ghost" onclick="showTeacher()">📋 لوحة المعلمة (هذا الجهاز)</button>
+</section>
+<section id="play" class="hidden">
+<p id="progress"></p><h2 id="instruction"></h2>
+<p>اضغط/ي الأعداد بالترتيب الصحيح:</p><div id="tiles" class="tiles"></div>
+<div id="chosen" class="chosen">؟</div><p id="feedback" class="feedback"></p>
+<button class="secondary" onclick="resetRound()">🔄 إعادة المحاولة</button><button class="ghost" onclick="speak(document.getElementById('instruction').textContent)">🔊 استمع/ي</button>
+</section>
+<section id="finish" class="hidden"><h2>🎉 أحسنت يا بطل/ة!</h2><h2 id="result"></h2><p>تم حفظ نتيجتك على هذا الجهاز.</p><button onclick="start()">العب/ي مرة أخرى</button><button class="ghost" onclick="goHome()">🏠 الرئيسية</button></section>
+<section id="teacher" class="hidden"><h2>📋 لوحة متابعة المعلمة</h2><p class="small">هذه النتائج محفوظة على الجهاز الحالي فقط، وليست نتائج جميع أجهزة الطالبات.</p><div id="records"></div><button class="ghost" onclick="goHome()">رجوع</button></section>
+</main><footer>إعداد المعلمة: أ / سلطانه الخديدي 💜</footer>
+<script>
+const ar=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[+d]);
+const $=id=>document.getElementById(id);
+const hide=()=>['welcome','play','finish','teacher'].forEach(id=>$(id).classList.add('hidden'));
+let name='',round=0,score=0,sequence=[],picked=[],correct=0;
+const total=5;
+function speak(text){try{speechSynthesis.cancel();let s=new SpeechSynthesisUtterance(text);s.lang='ar-SA';s.rate=.85;speechSynthesis.speak(s)}catch(e){}}
+function goHome(){hide();$('welcome').classList.remove('hidden')}
+function start(){name=$('student').value.trim();if(!name){alert('اكتب/ي اسم الطالب/ة أولًا');return}round=0;score=0;hide();$('play').classList.remove('hidden');nextRound()}
+function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function nextRound(){if(round>=total){finish();return}picked=[];correct=0;let length=round<2?4:round<4?5:6;let startNum=1+Math.floor(Math.random()*(11-length));sequence=Array.from({length},(_,i)=>startNum+i);$('progress').textContent=`السؤال ${ar(round+1)} من ${ar(total)} • النقاط: ${ar(score)}`;$('instruction').textContent=round%2===0?'رتّب/ي الأعداد من الأصغر إلى الأكبر':'رتّب/ي الأعداد من الأكبر إلى الأصغر';if(round%2)sequence.reverse();$('chosen').textContent='؟';$('feedback').textContent='';renderTiles();speak($('instruction').textContent)}
+function renderTiles(){let nums=shuffle([...sequence]);$('tiles').innerHTML='';nums.forEach(n=>{let b=document.createElement('button');b.className='tile';b.textContent=ar(n);b.onclick=()=>choose(n,b);$('tiles').appendChild(b)})}
+function choose(n,button){if(n!==sequence[correct]){$('feedback').textContent='حاول/ي مرة أخرى 💪';speak('حاول مرة أخرى');return}button.disabled=true;picked.push(n);correct++;$('chosen').textContent=picked.map(ar).join(' ← ');$('feedback').textContent='رائع! ⭐';if(correct===sequence.length){score+=20;round++;$('feedback').textContent='إجابة صحيحة! أحسنت 🎉';speak('أحسنت، إجابة صحيحة');setTimeout(nextRound,900)}}
+function resetRound(){picked=[];correct=0;$('chosen').textContent='؟';$('feedback').textContent='';renderTiles()}
+function finish(){hide();$('finish').classList.remove('hidden');$('result').textContent=`${name}، نتيجتك ${ar(score)} من ${ar(100)} ⭐`;try{let r=JSON.parse(localStorage.getItem('numberAdventureResults')||'[]');r.push({name,score,date:new Date().toLocaleString('ar-SA')});localStorage.setItem('numberAdventureResults',JSON.stringify(r))}catch(e){}}
+function showTeacher(){hide();$('teacher').classList.remove('hidden');let r=[];try{r=JSON.parse(localStorage.getItem('numberAdventureResults')||'[]')}catch(e){}let box=$('records');box.innerHTML='';if(!r.length){box.textContent='لا توجد نتائج محفوظة على هذا الجهاز حتى الآن.';return}let table=document.createElement('table'),head=document.createElement('tr');['الطالب/ة','النتيجة','التاريخ'].forEach(t=>{let th=document.createElement('th');th.textContent=t;head.appendChild(th)});table.appendChild(head);r.slice().reverse().forEach(x=>{let tr=document.createElement('tr');[x.name,`${ar(x.score)} / ١٠٠`,x.date].forEach(v=>{let td=document.createElement('td');td.textContent=v;tr.appendChild(td)});table.appendChild(tr)});box.appendChild(table)}
+</script></body></html>
