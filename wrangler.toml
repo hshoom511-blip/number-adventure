@@ -5,3 +5,7 @@ compatibility_date = "2026-11-01"
 [assets]
 directory = "./"
 run_worker_first = ["/api/*"]
+[[d1_databases]]
+binding = "DB"
+database_name = "student-results"
+database_id = "0f33cf50-292a-4151-aeec-f2a353d4f064"
