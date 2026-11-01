@@ -1,0 +1,7 @@
+name = "number-adventure"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+
+[assets]
+directory = "./"
+run_worker_first = ["/api/*"]
